@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Project Invoicing</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Create Invoice</h5>
+            </div>
+            <div class="card-body">
+                <form action="/invoices" method="post">
+                    <div class="mb-3">
+                        <label for="project_id" class="form-label">Project</label>
+                        <select class="form-select" id="project_id" name="project_id" required>
+                            <option value="" selected disabled>Select Project</option>
+                            {% for project in projects %}
+                            <option value="{{ project.id }}">{{ project.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount_charged" class="form-label">Amount Charged</label>
+                        <input type="number" step="0.01" class="form-control" id="amount_charged" name="amount_charged" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="invoice_date" class="form-label">Invoice Date</label>
+                        <input type="date" class="form-control" id="invoice_date" name="invoice_date" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Invoice</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Invoice List</h5>
+            </div>
+            <div class="card-body">
+                {% if invoices %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Project</th>
+                                <th>Amount Charged</th>
+                                <th>Invoice Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td>{{ invoice.id }}</td>
+                                <td>{{ invoice.project.name }}</td>
+                                <td>${{ "%.2f"|format(invoice.amount_charged) }}</td>
+                                <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ invoice.id }}">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ invoice.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ invoice.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ invoice.id }}">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this invoice for project <strong>{{ invoice.project.name }}</strong> with amount <strong>${{ "%.2f"|format(invoice.amount_charged) }}</strong>?</p>
+                                            <p class="text-danger">This action cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="/invoices/delete/{{ invoice.id }}" method="post">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No invoices found. Create your first invoice using the form.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction ERP</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Construction ERP</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'employees' %}active{% endif %}" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'worklogs' %}active{% endif %}" href="/worklogs">Work Logs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'payroll' %}active{% endif %}" href="/payroll">Payroll</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'projects' %}active{% endif %}" href="/projects">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'invoices' %}active{% endif %}" href="/invoices">Invoices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'financials' %}active{% endif %}" href="/financials">Financials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'reports' %}active{% endif %}" href="/reports">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'documentation' %}active{% endif %}" href="/documentation">Documentation</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if active_page == 'home' %}
+            <div class="jumbotron">
+                <h1 class="display-4">Welcome to Construction ERP</h1>
+                <p class="lead">A simple ERP system for managing payroll, project invoicing, and financial management.</p>
+                <hr class="my-4">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Payroll Management</h5>
+                                <p class="card-text">Manage employees, work logs, and process payroll.</p>
+                                <a href="/employees" class="btn btn-primary">Employees</a>
+                                <a href="/worklogs" class="btn btn-primary">Work Logs</a>
+                                <a href="/payroll" class="btn btn-primary">Payroll</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Project Management</h5>
+                                <p class="card-text">Manage projects, costs, and invoices.</p>
+                                <a href="/projects" class="btn btn-primary">Projects</a>
+                                <a href="/invoices" class="btn btn-primary">Invoices</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Financial Management</h5>
+                                <p class="card-text">Manage accounts payable, paid accounts, and expenses.</p>
+                                <a href="/financials" class="btn btn-primary">Financials</a>
+                                <a href="/reports" class="btn btn-primary">Reports</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-4 text-center">
+                        <a href="/documentation" class="btn btn-outline-secondary">View System Documentation</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            {% block content %}{% endblock %}
+        {% endif %}
+    </div>
+
+    <footer class="mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="text-muted">Construction ERP &copy; 2025</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+</body>
+</html>

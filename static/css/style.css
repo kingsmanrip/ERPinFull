@@ -1,0 +1,107 @@
+/* Custom styles for Construction ERP */
+
+/* Add some padding to the body */
+body {
+    padding-bottom: 20px;
+}
+
+/* Style for the main content area */
+.container {
+    max-width: 1400px;
+}
+
+/* Card styling */
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Table styling */
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Form styling */
+.form-label {
+    font-weight: 500;
+}
+
+/* Print styles */
+@media print {
+    .navbar, .nav-tabs, footer, form, .btn, .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .card-header {
+        background-color: white !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+    
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    body {
+        font-size: 12pt;
+    }
+    
+    h1 {
+        font-size: 18pt;
+        margin-bottom: 20px;
+    }
+    
+    h5 {
+        font-size: 14pt;
+    }
+    
+    .table {
+        width: 100% !important;
+        font-size: 10pt;
+    }
+}
+
+/* Custom styles for tabs */
+.nav-tabs .nav-link {
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+    font-weight: 500;
+}
+
+/* Dashboard cards on home page */
+.jumbotron {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 0.3rem;
+    margin-bottom: 2rem;
+}
+
+/* Responsive tables */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Badge styling */
+.badge {
+    font-weight: 500;
+}
+
+/* Footer styling */
+footer {
+    margin-top: 3rem;
+    padding: 1rem 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}

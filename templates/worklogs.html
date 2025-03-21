@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Work Log Entry</h1>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Add Work Log</h5>
+            </div>
+            <div class="card-body">
+                <form action="/worklogs" method="post">
+                    <div class="mb-3">
+                        <label for="employee_id" class="form-label">Employee</label>
+                        <select class="form-select" id="employee_id" name="employee_id" required>
+                            <option value="" selected disabled>Select Employee</option>
+                            {% for employee in employees %}
+                            <option value="{{ employee.id }}">{{ employee.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="log_date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="log_date" name="log_date" value="{{ today.isoformat() }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="entry_time" class="form-label">Entry Time</label>
+                        <input type="time" class="form-control" id="entry_time" name="entry_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exit_time" class="form-label">Exit Time</label>
+                        <input type="time" class="form-control" id="exit_time" name="exit_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lunch_duration" class="form-label">Lunch Duration (minutes)</label>
+                        <input type="number" class="form-control" id="lunch_duration" name="lunch_duration" min="0" value="30" required>
+                        <small class="form-text text-muted">30 minutes will be deducted if lunch duration is greater than 30 minutes.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Work Log</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Work Logs</h5>
+            </div>
+            <div class="card-body">
+                {% if worklogs %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Entry Time</th>
+                                <th>Exit Time</th>
+                                <th>Lunch (min)</th>
+                                <th>Hours Worked</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for worklog in worklogs %}
+                            <tr>
+                                <td>{{ worklog.id }}</td>
+                                <td>{{ worklog.employee.name }}</td>
+                                <td>{{ worklog.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ worklog.entry_time.strftime('%H:%M') }}</td>
+                                <td>{{ worklog.exit_time.strftime('%H:%M') }}</td>
+                                <td>{{ worklog.lunch_duration }}</td>
+                                <td>{{ "%.2f"|format(worklog.hours_worked) }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ worklog.id }}">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ worklog.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ worklog.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ worklog.id }}">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this work log for <strong>{{ worklog.employee.name }}</strong> on <strong>{{ worklog.date.strftime('%Y-%m-%d') }}</strong>?</p>
+                                            <p class="text-danger">This action cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="/worklogs/delete/{{ worklog.id }}" method="post">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No work logs found. Add your first work log using the form.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

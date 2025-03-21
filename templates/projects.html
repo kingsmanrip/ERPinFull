@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Project Management</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Add Project</h5>
+            </div>
+            <div class="card-body">
+                <form action="/projects" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Project Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="value" class="form-label">Project Value</label>
+                        <input type="number" step="0.01" class="form-control" id="value" name="value" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_date" class="form-label">End Date (Optional)</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Project</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Project List</h5>
+            </div>
+            <div class="card-body">
+                {% if projects %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Value</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Total Costs</th>
+                                <th>Profit Margin</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in projects %}
+                            <tr>
+                                <td>{{ project.id }}</td>
+                                <td>{{ project.name }}</td>
+                                <td>${{ "%.2f"|format(project.value) }}</td>
+                                <td>{{ project.start_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ project.end_date.strftime('%Y-%m-%d') if project.end_date else 'Ongoing' }}</td>
+                                <td>${{ "%.2f"|format(project.total_costs) }}</td>
+                                <td>${{ "%.2f"|format(project.profit_margin) }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editModal{{ project.id }}">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-info" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#costsModal{{ project.id }}">
+                                        Costs
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ project.id }}">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editModal{{ project.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ project.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editModalLabel{{ project.id }}">Edit Project</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/projects" method="post">
+                                                <input type="hidden" name="project_id" value="{{ project.id }}">
+                                                <div class="mb-3">
+                                                    <label for="edit_name{{ project.id }}" class="form-label">Project Name</label>
+                                                    <input type="text" class="form-control" id="edit_name{{ project.id }}" name="name" value="{{ project.name }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="edit_value{{ project.id }}" class="form-label">Project Value</label>
+                                                    <input type="number" step="0.01" class="form-control" id="edit_value{{ project.id }}" name="value" value="{{ project.value }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="edit_start_date{{ project.id }}" class="form-label">Start Date</label>
+                                                    <input type="date" class="form-control" id="edit_start_date{{ project.id }}" name="start_date" value="{{ project.start_date.isoformat() }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="edit_end_date{{ project.id }}" class="form-label">End Date (Optional)</label>
+                                                    <input type="date" class="form-control" id="edit_end_date{{ project.id }}" name="end_date" value="{{ project.end_date.isoformat() if project.end_date else '' }}">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Costs Modal -->
+                            <div class="modal fade" id="costsModal{{ project.id }}" tabindex="-1" aria-labelledby="costsModalLabel{{ project.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="costsModalLabel{{ project.id }}">Project Costs: {{ project.name }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    <h6>Add Cost</h6>
+                                                    <form action="/project_costs" method="post">
+                                                        <input type="hidden" name="project_id" value="{{ project.id }}">
+                                                        <div class="mb-3">
+                                                            <label for="cost_type{{ project.id }}" class="form-label">Cost Type</label>
+                                                            <select class="form-select" id="cost_type{{ project.id }}" name="cost_type" required>
+                                                                <option value="material">Material</option>
+                                                                <option value="employee">Employee</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="description{{ project.id }}" class="form-label">Description</label>
+                                                            <input type="text" class="form-control" id="description{{ project.id }}" name="description" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="amount{{ project.id }}" class="form-label">Amount</label>
+                                                            <input type="number" step="0.01" class="form-control" id="amount{{ project.id }}" name="amount" required>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Add Cost</button>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <h6>Cost List</h6>
+                                                    {% if project.costs %}
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Type</th>
+                                                                    <th>Description</th>
+                                                                    <th>Amount</th>
+                                                                    <th>Actions</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for cost in project.costs %}
+                                                                <tr>
+                                                                    <td>{{ cost.cost_type.capitalize() }}</td>
+                                                                    <td>{{ cost.description }}</td>
+                                                                    <td>${{ "%.2f"|format(cost.amount) }}</td>
+                                                                    <td>
+                                                                        <form action="/project_costs/delete/{{ cost.id }}" method="post" class="d-inline">
+                                                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th colspan="2">Total</th>
+                                                                    <th>${{ "%.2f"|format(project.total_costs) }}</th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                    {% else %}
+                                                    <p>No costs added yet.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ project.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ project.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ project.id }}">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete project: <strong>{{ project.name }}</strong>?</p>
+                                            <p class="text-danger">This action cannot be undone and will delete all associated costs and invoices.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="/projects/delete/{{ project.id }}" method="post">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No projects found. Add your first project using the form.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

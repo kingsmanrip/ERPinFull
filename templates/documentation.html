@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Documentation</h1>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="list-group">
+            <a href="#overview" class="list-group-item list-group-item-action">System Overview</a>
+            <a href="#payroll" class="list-group-item list-group-item-action">Payroll Management</a>
+            <a href="#projects" class="list-group-item list-group-item-action">Project Management</a>
+            <a href="#invoicing" class="list-group-item list-group-item-action">Invoicing</a>
+            <a href="#financials" class="list-group-item list-group-item-action">Financial Management</a>
+            <a href="#reports" class="list-group-item list-group-item-action">Reports</a>
+            <a href="#faq" class="list-group-item list-group-item-action">FAQ</a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="overview">System Overview</h2>
+                <p>Construction ERP is a simple, yet powerful system designed specifically for construction companies. It focuses on three main areas:</p>
+                <ul>
+                    <li><strong>Payroll Management</strong>: Track employee hours, lunch breaks, and process payments</li>
+                    <li><strong>Project Management</strong>: Manage projects, track costs, and calculate profit margins</li>
+                    <li><strong>Financial Management</strong>: Handle accounts payable, paid accounts, and expenses</li>
+                </ul>
+                <p>The system is designed to be easy to use while providing the essential functionality needed to run a construction business efficiently.</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="payroll">Payroll Management</h2>
+                
+                <h4>Employees</h4>
+                <p>The Employees page allows you to:</p>
+                <ul>
+                    <li>Add new employees with their hourly rates</li>
+                    <li>Edit existing employee information</li>
+                    <li>Delete employees (use with caution)</li>
+                </ul>
+                
+                <h4>Work Logs</h4>
+                <p>The Work Logs page allows you to:</p>
+                <ul>
+                    <li>Record daily work hours for employees</li>
+                    <li>Track entry time, exit time, and lunch duration</li>
+                    <li>The system automatically calculates hours worked</li>
+                    <li>If lunch duration is over 30 minutes, a 30-minute deduction is applied</li>
+                </ul>
+                
+                <h4>Payroll Processing</h4>
+                <p>The Payroll page allows you to:</p>
+                <ul>
+                    <li>View work hours for a selected week</li>
+                    <li>Calculate payment amounts based on hourly rates</li>
+                    <li>Process payments with different payment methods (cash, check)</li>
+                    <li>Track payment history</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <strong>Tip:</strong> Work logs are typically entered on Fridays for the past week, and payroll is processed weekly.
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="projects">Project Management</h2>
+                <p>The Projects page allows you to:</p>
+                <ul>
+                    <li>Create new projects with client details and value</li>
+                    <li>Track project start and end dates</li>
+                    <li>Record project costs (materials, labor)</li>
+                    <li>Monitor project status and progress</li>
+                    <li>Calculate profit margins</li>
+                </ul>
+                
+                <h4>Project Costs</h4>
+                <p>You can track two types of costs:</p>
+                <ul>
+                    <li><strong>Material Costs</strong>: Expenses for materials used in the project</li>
+                    <li><strong>Employee Costs</strong>: Labor costs associated with the project</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <strong>Tip:</strong> Regularly update project costs to maintain accurate profit margin calculations.
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="invoicing">Invoicing</h2>
+                <p>The Invoices page allows you to:</p>
+                <ul>
+                    <li>Generate invoices for projects</li>
+                    <li>Track invoice status (draft, sent, paid)</li>
+                    <li>Record payment details</li>
+                    <li>Calculate remaining balances</li>
+                </ul>
+                
+                <h4>Invoice Workflow</h4>
+                <ol>
+                    <li>Select a project</li>
+                    <li>Enter invoice amount</li>
+                    <li>Set invoice date</li>
+                    <li>Create the invoice</li>
+                    <li>Update status as needed</li>
+                </ol>
+                
+                <div class="alert alert-info">
+                    <strong>Tip:</strong> You can create multiple invoices for a single project (e.g., progress payments).
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="financials">Financial Management</h2>
+                
+                <h4>Accounts Payable</h4>
+                <p>The Accounts Payable section allows you to:</p>
+                <ul>
+                    <li>Record bills and invoices to be paid</li>
+                    <li>Track supplier information</li>
+                    <li>Monitor due dates</li>
+                    <li>Categorize payables</li>
+                </ul>
+                
+                <h4>Paid Accounts</h4>
+                <p>The Paid Accounts section allows you to:</p>
+                <ul>
+                    <li>Record payments made to suppliers</li>
+                    <li>Track payment method details (cash, check)</li>
+                    <li>For check payments, record check number and bank</li>
+                    <li>Monitor payment history</li>
+                </ul>
+                
+                <h4>Expenses</h4>
+                <p>The Expenses section allows you to:</p>
+                <ul>
+                    <li>Record company expenses by category</li>
+                    <li>Track payment methods</li>
+                    <li>Monitor monthly expenses</li>
+                    <li>Analyze expense patterns</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <strong>Tip:</strong> Regularly review the Accounts Payable section to ensure timely payments and avoid late fees.
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="reports">Reports</h2>
+                <p>The Reports page provides various reports for analysis and decision-making:</p>
+                
+                <h4>Payroll Reports</h4>
+                <ul>
+                    <li><strong>Payroll Report</strong>: Shows all payments made to employees</li>
+                    <li><strong>Payment Method Report</strong>: Breaks down payments by method</li>
+                    <li><strong>Hours Worked Report</strong>: Shows total hours worked by each employee</li>
+                </ul>
+                
+                <h4>Project Reports</h4>
+                <ul>
+                    <li><strong>Project Billing Report</strong>: Shows invoices generated for projects</li>
+                    <li><strong>Project Cost Report</strong>: Breaks down costs by category</li>
+                    <li><strong>Project Profit Margin Report</strong>: Calculates profit margins for projects</li>
+                </ul>
+                
+                <h4>Financial Reports</h4>
+                <ul>
+                    <li><strong>Accounts Payable Report</strong>: Lists all pending bills</li>
+                    <li><strong>Paid Accounts Report</strong>: Shows all payments made</li>
+                    <li><strong>Monthly Expense Report</strong>: Analyzes expenses by category</li>
+                    <li><strong>Paid Accounts by Payment Method</strong>: Breaks down payments by method</li>
+                    <li><strong>Payment Forecast</strong>: Projects upcoming payments based on due dates</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <strong>Tip:</strong> Use the date range filters to customize reports for specific periods.
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 id="faq">Frequently Asked Questions</h2>
+                
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                How do I calculate payroll?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>To calculate payroll:</p>
+                                <ol>
+                                    <li>Go to the Payroll page</li>
+                                    <li>Select the week you want to process</li>
+                                    <li>Review the hours worked and calculated amounts</li>
+                                    <li>Click "Process Payment" for each employee</li>
+                                    <li>Enter payment details and submit</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                How do I track project profitability?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>To track project profitability:</p>
+                                <ol>
+                                    <li>Ensure all project costs are recorded (materials, labor)</li>
+                                    <li>Record all invoices generated for the project</li>
+                                    <li>Go to the Reports page</li>
+                                    <li>Select "Project Profit Margin Report"</li>
+                                    <li>View the profit margin and percentage for each project</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                How do I manage accounts payable?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>To manage accounts payable:</p>
+                                <ol>
+                                    <li>Go to the Financials page</li>
+                                    <li>Use the "Accounts Payable" section</li>
+                                    <li>Add new payables with supplier, amount, and due date</li>
+                                    <li>Update status as needed</li>
+                                    <li>When paid, record the payment in the "Paid Accounts" section</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                How do I generate reports?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>To generate reports:</p>
+                                <ol>
+                                    <li>Go to the Reports page</li>
+                                    <li>Select the report type from the dropdown</li>
+                                    <li>Set the date range (start and end dates)</li>
+                                    <li>Click "Generate Report"</li>
+                                    <li>View the report and use the "Print Report" button if needed</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Payroll Processing</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Select Week</h5>
+            </div>
+            <div class="card-body">
+                <form action="/payroll" method="get">
+                    <div class="mb-3">
+                        <label for="week_date" class="form-label">Select any date in the week</label>
+                        <input type="date" class="form-control" id="week_date" name="week_date" value="{{ selected_date.isoformat() }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">View Payroll</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Week Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Week Period:</strong> {{ start_date.strftime('%Y-%m-%d') }} to {{ end_date.strftime('%Y-%m-%d') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Weekly Payroll</h5>
+            </div>
+            <div class="card-body">
+                {% if payroll_data %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Hourly Rate</th>
+                                <th>Hours Worked</th>
+                                <th>Amount Due</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in payroll_data %}
+                            <tr>
+                                <td>{{ item.employee.name }}</td>
+                                <td>${{ "%.2f"|format(item.employee.hourly_rate) }}</td>
+                                <td>{{ "%.2f"|format(item.total_hours) }}</td>
+                                <td>${{ "%.2f"|format(item.amount_due) }}</td>
+                                <td>
+                                    {% if item.total_hours > 0 %}
+                                    <button class="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#paymentModal{{ item.employee.id }}">
+                                        Process Payment
+                                    </button>
+                                    {% else %}
+                                    <span class="text-muted">No hours</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            
+                            <!-- Payment Modal -->
+                            <div class="modal fade" id="paymentModal{{ item.employee.id }}" tabindex="-1" aria-labelledby="paymentModalLabel{{ item.employee.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="paymentModalLabel{{ item.employee.id }}">Process Payment for {{ item.employee.name }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/payroll" method="post">
+                                                <input type="hidden" name="employee_id" value="{{ item.employee.id }}">
+                                                <div class="mb-3">
+                                                    <label for="amount{{ item.employee.id }}" class="form-label">Amount</label>
+                                                    <input type="number" step="0.01" class="form-control" id="amount{{ item.employee.id }}" name="amount" value="{{ item.amount_due }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="payment_method{{ item.employee.id }}" class="form-label">Payment Method</label>
+                                                    <select class="form-select" id="payment_method{{ item.employee.id }}" name="payment_method" required>
+                                                        <option value="cash">Cash</option>
+                                                        <option value="check">Check</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="payment_date{{ item.employee.id }}" class="form-label">Payment Date</label>
+                                                    <input type="date" class="form-control" id="payment_date{{ item.employee.id }}" name="payment_date" value="{{ selected_date.isoformat() }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="notes{{ item.employee.id }}" class="form-label">Notes</label>
+                                                    <textarea class="form-control" id="notes{{ item.employee.id }}" name="notes" rows="3"></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Process Payment</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No payroll data found for the selected week.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Payments</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_payments %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in recent_payments %}
+                            <tr>
+                                <td>{{ payment.employee.name }}</td>
+                                <td>${{ "%.2f"|format(payment.amount) }}</td>
+                                <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ payment.payment_method.capitalize() }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No recent payments found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Reports</h1>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Select Report</h5>
+            </div>
+            <div class="card-body">
+                <form action="/reports" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="report_type" class="form-label">Report Type</label>
+                        <select class="form-select" id="report_type" name="report_type" required>
+                            <option value="" {% if not report_type %}selected{% endif %} disabled>Select Report Type</option>
+                            <option value="payroll" {% if report_type == 'payroll' %}selected{% endif %}>Payroll Report</option>
+                            <option value="payment_method" {% if report_type == 'payment_method' %}selected{% endif %}>Payment Method Report</option>
+                            <option value="hours_worked" {% if report_type == 'hours_worked' %}selected{% endif %}>Hours Worked Report</option>
+                            <option value="project_billing" {% if report_type == 'project_billing' %}selected{% endif %}>Project Billing Report</option>
+                            <option value="project_cost" {% if report_type == 'project_cost' %}selected{% endif %}>Project Cost Report</option>
+                            <option value="project_profit" {% if report_type == 'project_profit' %}selected{% endif %}>Project Profit Margin Report</option>
+                            <option value="accounts_payable" {% if report_type == 'accounts_payable' %}selected{% endif %}>Accounts Payable Report</option>
+                            <option value="paid_accounts" {% if report_type == 'paid_accounts' %}selected{% endif %}>Paid Accounts Report</option>
+                            <option value="monthly_expense" {% if report_type == 'monthly_expense' %}selected{% endif %}>Monthly Expense Report</option>
+                            <option value="paid_by_method" {% if report_type == 'paid_by_method' %}selected{% endif %}>Paid Accounts by Payment Method</option>
+                            <option value="payment_forecast" {% if report_type == 'payment_forecast' %}selected{% endif %}>Payment Forecast</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if report_type %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    {% if report_type == 'payroll' %}
+                        Payroll Report
+                    {% elif report_type == 'payment_method' %}
+                        Payment Method Report
+                    {% elif report_type == 'hours_worked' %}
+                        Hours Worked Report
+                    {% elif report_type == 'project_billing' %}
+                        Project Billing Report
+                    {% elif report_type == 'project_cost' %}
+                        Project Cost Report
+                    {% elif report_type == 'project_profit' %}
+                        Project Profit Margin Report
+                    {% elif report_type == 'accounts_payable' %}
+                        Accounts Payable Report
+                    {% elif report_type == 'paid_accounts' %}
+                        Paid Accounts Report
+                    {% elif report_type == 'monthly_expense' %}
+                        Monthly Expense Report
+                    {% elif report_type == 'paid_by_method' %}
+                        Paid Accounts by Payment Method
+                    {% elif report_type == 'payment_forecast' %}
+                        Payment Forecast
+                    {% endif %}
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">Print Report</button>
+            </div>
+            <div class="card-body">
+                {% if report_type == 'payroll' %}
+                    <!-- Payroll Report -->
+                    {% if report_data and report_data.payments %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Amount</th>
+                                        <th>Payment Method</th>
+                                        <th>Payment Date</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in report_data.payments %}
+                                    <tr>
+                                        <td>{{ payment.employee.name }}</td>
+                                        <td>${{ "%.2f"|format(payment.amount) }}</td>
+                                        <td>{{ payment.payment_method.capitalize() }}</td>
+                                        <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ payment.notes or '' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Total</th>
+                                        <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                        <th colspan="3"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No payroll data found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'payment_method' %}
+                    <!-- Payment Method Report -->
+                    {% if report_data %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Payment Method</th>
+                                                <th>Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Cash</td>
+                                                <td>${{ "%.2f"|format(report_data.cash_total) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Check</td>
+                                                <td>${{ "%.2f"|format(report_data.check_total) }}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="paymentMethodChart" style="height: 300px;"></div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No payment data found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'hours_worked' %}
+                    <!-- Hours Worked Report -->
+                    {% if report_data and report_data.hours_data %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Hourly Rate</th>
+                                        <th>Total Hours</th>
+                                        <th>Total Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in report_data.hours_data %}
+                                    <tr>
+                                        <td>{{ item.employee.name }}</td>
+                                        <td>${{ "%.2f"|format(item.employee.hourly_rate) }}</td>
+                                        <td>{{ "%.2f"|format(item.total_hours) }}</td>
+                                        <td>${{ "%.2f"|format(item.total_hours * item.employee.hourly_rate) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No hours data found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'project_billing' %}
+                    <!-- Project Billing Report -->
+                    {% if report_data and report_data.billing_data %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Total Invoiced</th>
+                                        <th>Total Costs</th>
+                                        <th>Profit</th>
+                                        <th>Profit %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in report_data.billing_data %}
+                                    <tr>
+                                        <td>{{ item.project.name }}</td>
+                                        <td>${{ "%.2f"|format(item.total_invoiced) }}</td>
+                                        <td>${{ "%.2f"|format(item.total_costs) }}</td>
+                                        <td>${{ "%.2f"|format(item.profit) }}</td>
+                                        <td>
+                                            {% if item.total_invoiced > 0 %}
+                                                {{ "%.2f"|format(item.profit / item.total_invoiced * 100) }}%
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No project billing data found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'project_cost' %}
+                    <!-- Project Cost Report -->
+                    {% if report_data and report_data.cost_data %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Material Costs</th>
+                                        <th>Employee Costs</th>
+                                        <th>Total Costs</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in report_data.cost_data %}
+                                    <tr>
+                                        <td>{{ item.project.name }}</td>
+                                        <td>${{ "%.2f"|format(item.material_costs) }}</td>
+                                        <td>${{ "%.2f"|format(item.employee_costs) }}</td>
+                                        <td>${{ "%.2f"|format(item.total_costs) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No project cost data found.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'project_profit' %}
+                    <!-- Project Profit Margin Report -->
+                    {% if report_data and report_data.profit_data %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Total Invoiced</th>
+                                        <th>Total Costs</th>
+                                        <th>Profit Margin</th>
+                                        <th>Profit %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in report_data.profit_data %}
+                                    <tr>
+                                        <td>{{ item.project.name }}</td>
+                                        <td>${{ "%.2f"|format(item.total_invoiced) }}</td>
+                                        <td>${{ "%.2f"|format(item.total_costs) }}</td>
+                                        <td>${{ "%.2f"|format(item.profit_margin) }}</td>
+                                        <td>
+                                            {% if item.profit_percentage > 0 %}
+                                                {{ "%.2f"|format(item.profit_percentage) }}%
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No project profit data found.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'accounts_payable' %}
+                    <!-- Accounts Payable Report -->
+                    {% if report_data and report_data.payables %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Supplier</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Due Date</th>
+                                        <th>Payment Method</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payable in report_data.payables %}
+                                    <tr>
+                                        <td>{{ payable.supplier }}</td>
+                                        <td>{{ payable.description }}</td>
+                                        <td>${{ "%.2f"|format(payable.amount) }}</td>
+                                        <td>{{ payable.due_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ payable.payment_method.capitalize() }}</td>
+                                        <td>{{ payable.category }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2">Total</th>
+                                        <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                        <th colspan="3"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No accounts payable found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'paid_accounts' %}
+                    <!-- Paid Accounts Report -->
+                    {% if report_data and report_data.paid_accounts %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Supplier</th>
+                                        <th>Amount Paid</th>
+                                        <th>Payment Date</th>
+                                        <th>Payment Method</th>
+                                        <th>Check Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for account in report_data.paid_accounts %}
+                                    <tr>
+                                        <td>{{ account.supplier }}</td>
+                                        <td>${{ "%.2f"|format(account.amount_paid) }}</td>
+                                        <td>{{ account.payment_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ account.payment_method.capitalize() }}</td>
+                                        <td>
+                                            {% if account.payment_method == 'check' %}
+                                                {% if account.check_number %}
+                                                    #{{ account.check_number }}
+                                                    {% if account.check_bank %}
+                                                        ({{ account.check_bank }})
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Total</th>
+                                        <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                        <th colspan="3"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No paid accounts found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'monthly_expense' %}
+                    <!-- Monthly Expense Report -->
+                    {% if report_data and report_data.expenses %}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+                                                <th>Date</th>
+                                                <th>Category</th>
+                                                <th>Payment Method</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for expense in report_data.expenses %}
+                                            <tr>
+                                                <td>{{ expense.description }}</td>
+                                                <td>${{ "%.2f"|format(expense.amount) }}</td>
+                                                <td>{{ expense.expense_date.strftime('%Y-%m-%d') }}</td>
+                                                <td>{{ expense.category }}</td>
+                                                <td>{{ expense.payment_method.capitalize() }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                                <th colspan="3"></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>Expenses by Category</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Category</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for category, amount in report_data.categories.items() %}
+                                            <tr>
+                                                <td>{{ category }}</td>
+                                                <td>${{ "%.2f"|format(amount) }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No expenses found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'paid_by_method' %}
+                    <!-- Paid Accounts by Payment Method -->
+                    {% if report_data and report_data.methods %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Payment Method</th>
+                                                <th>Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for method, amount in report_data.methods.items() %}
+                                            <tr>
+                                                <td>{{ method.capitalize() }}</td>
+                                                <td>${{ "%.2f"|format(amount) }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="paidMethodChart" style="height: 300px;"></div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No paid accounts found for the selected period.</p>
+                    {% endif %}
+                
+                {% elif report_type == 'payment_forecast' %}
+                    <!-- Payment Forecast -->
+                    {% if report_data and report_data.forecast %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Monthly Payment Forecast</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Month</th>
+                                                <th>Amount Due</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for month, amount in report_data.forecast.items() %}
+                                            <tr>
+                                                <td>{{ month }}</td>
+                                                <td>${{ "%.2f"|format(amount) }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th>${{ "%.2f"|format(report_data.total) }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Upcoming Payments</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Supplier</th>
+                                                <th>Amount</th>
+                                                <th>Due Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for payable in report_data.payables %}
+                                            <tr>
+                                                <td>{{ payable.supplier }}</td>
+                                                <td>${{ "%.2f"|format(payable.amount) }}</td>
+                                                <td>{{ payable.due_date.strftime('%Y-%m-%d') }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No pending payments found.</p>
+                    {% endif %}
+                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

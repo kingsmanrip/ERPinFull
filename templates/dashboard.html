@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Payroll Summary</h5>
+            </div>
+            <div class="card-body">
+                <h2 class="display-4 text-center">${{ "%.2f"|format(payroll_total) }}</h2>
+                <p class="text-center text-muted">Total Payroll This Month</p>
+                <div class="d-grid gap-2">
+                    <a href="/payroll" class="btn btn-outline-primary">View Payroll</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">Project Revenue</h5>
+            </div>
+            <div class="card-body">
+                <h2 class="display-4 text-center">${{ "%.2f"|format(invoice_total) }}</h2>
+                <p class="text-center text-muted">Total Invoiced This Month</p>
+                <div class="d-grid gap-2">
+                    <a href="/invoices" class="btn btn-outline-success">View Invoices</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">Expenses</h5>
+            </div>
+            <div class="card-body">
+                <h2 class="display-4 text-center">${{ "%.2f"|format(expense_total) }}</h2>
+                <p class="text-center text-muted">Total Expenses This Month</p>
+                <div class="d-grid gap-2">
+                    <a href="/financials" class="btn btn-outline-danger">View Financials</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Upcoming Payments</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_payables %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payable in upcoming_payables %}
+                            <tr>
+                                <td>{{ payable.supplier }}</td>
+                                <td>${{ "%.2f"|format(payable.amount) }}</td>
+                                <td>{{ payable.due_date.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center">No upcoming payments</p>
+                {% endif %}
+            </div>
+            <div class="card-footer text-end">
+                <a href="/financials" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Active Projects</h5>
+            </div>
+            <div class="card-body">
+                {% if active_projects %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Value</th>
+                                <th>Costs</th>
+                                <th>Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in active_projects %}
+                            <tr>
+                                <td>{{ project.name }}</td>
+                                <td>${{ "%.2f"|format(project.value) }}</td>
+                                <td>${{ "%.2f"|format(project.total_costs) }}</td>
+                                <td>${{ "%.2f"|format(project.value - project.total_costs) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center">No active projects</p>
+                {% endif %}
+            </div>
+            <div class="card-footer text-end">
+                <a href="/projects" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in recent_activity %}
+                            <tr>
+                                <td>{{ activity.date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if activity.type == 'payment' %}
+                                    <span class="badge bg-primary">Payroll</span>
+                                    {% elif activity.type == 'invoice' %}
+                                    <span class="badge bg-success">Invoice</span>
+                                    {% elif activity.type == 'expense' %}
+                                    <span class="badge bg-danger">Expense</span>
+                                    {% elif activity.type == 'paid_account' %}
+                                    <span class="badge bg-warning">Payment</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ activity.description }}</td>
+                                <td>${{ "%.2f"|format(activity.amount) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
