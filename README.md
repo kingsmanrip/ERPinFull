@@ -11,6 +11,8 @@ A comprehensive ERP system for construction companies, featuring payroll managem
 - **Project Management**: Track projects, costs, and profit margins
 - **Invoicing**: Generate invoices for projects
 - **Financial Management**: Handle accounts payable, paid accounts, and expenses
+- **Data Validation**: Client and server-side validation with real-time feedback
+- **Confirmation Dialogs**: Prevent accidental data deletion or modification
 - **Data Visualization**: Interactive charts for financial analysis
 - **Reports**: Generate various reports for payroll, projects, and finances
 
@@ -19,6 +21,7 @@ A comprehensive ERP system for construction companies, featuring payroll managem
 - **Backend**: Python with FastAPI
 - **Database**: SQLite with SQLAlchemy
 - **Frontend**: HTML with Jinja2 templates and Bootstrap
+- **Validation**: Client-side (JavaScript) and server-side (Python) validation
 - **Data Visualization**: Chart.js
 - **Deployment**: Gunicorn
 
@@ -64,6 +67,7 @@ construction_erp/
 ├── app.py               # Main FastAPI application with routes
 ├── models.py            # SQLAlchemy database models
 ├── database.py          # Database connection and session management
+├── validation.py        # Server-side validation module
 ├── templates/           # HTML templates
 │   ├── base.html        # Base template with navigation
 │   ├── employees.html   # Employee management page
@@ -77,7 +81,8 @@ construction_erp/
 │   ├── css/
 │   │   └── style.css    # Custom styles
 │   └── js/
-│       └── script.js    # Custom JavaScript
+│       ├── script.js    # Custom JavaScript
+│       └── validation.js # Client-side validation and confirmation dialogs
 ├── requirements.txt     # Dependencies
 ├── PLAN.md              # Project overview and requirements
 ├── PAYROLL.md           # Payroll feature details
@@ -96,6 +101,25 @@ construction_erp/
 6. **Invoicing**: Generate invoices for projects
 7. **Financial Management**: Track accounts payable, paid accounts, and expenses
 8. **Reports**: Generate various reports for analysis
+
+## Data Validation
+
+The system includes comprehensive validation to ensure data integrity:
+
+### Client-side Validation
+- Real-time feedback as users type in form fields
+- Visual indicators for valid/invalid inputs
+- Prevents form submission with invalid data
+
+### Server-side Validation
+- Validates all data before saving to the database
+- Returns specific error messages for each field
+- Preserves form data when validation fails
+
+### Confirmation Dialogs
+- Prevents accidental deletion of important data
+- Requires explicit confirmation for critical actions
+- Provides clear warnings about potential data loss
 
 ## License
 

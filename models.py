@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime, date, time
 
-from database import Base
+from construction_erp.database import Base
 
 
 class Employee(Base):

@@ -4,12 +4,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from datetime import datetime, date, timedelta
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 import os
 from pathlib import Path
+import urllib.parse
 
-import models
-from database import engine, get_db
+from construction_erp import models
+from construction_erp.database import engine, get_db
+from construction_erp.validation import validate_form_data, ValidationError
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -17,8 +19,9 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Construction ERP")
 
 # Set up templates and static files
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+BASE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 # Helper functions
 def get_week_dates(selected_date=None):
@@ -143,7 +146,7 @@ async def employees_page(request: Request, db: Session = Depends(get_db)):
     employees = db.query(models.Employee).all()
     return templates.TemplateResponse(
         "employees.html", 
-        {"request": request, "employees": employees, "active_page": "employees"}
+        {"request": request, "employees": employees, "active_page": "employees", "errors": {}, "form_data": {}}
     )
 
 @app.post("/employees")
@@ -155,30 +158,90 @@ async def add_update_employee(
     db: Session = Depends(get_db)
 ):
     """Add or update employee"""
+    # Prepare form data for validation and potential re-display
+    form_data = {"name": name, "hourly_rate": hourly_rate}
     if employee_id:
-        # Update existing employee
-        employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
-        if employee:
-            employee.name = name
-            employee.hourly_rate = hourly_rate
-    else:
-        # Create new employee
-        employee = models.Employee(name=name, hourly_rate=hourly_rate)
-        db.add(employee)
+        form_data["employee_id"] = employee_id
     
-    db.commit()
-    return RedirectResponse(url="/employees", status_code=303)
+    # Validate form data
+    errors = validate_form_data("employee", form_data)
+    
+    if errors:
+        # If validation fails, re-render the form with errors
+        employees = db.query(models.Employee).all()
+        return templates.TemplateResponse(
+            "employees.html",
+            {"request": request, "employees": employees, "active_page": "employees", 
+             "errors": errors, "form_data": form_data},
+            status_code=422
+        )
+    
+    try:
+        if employee_id:
+            # Update existing employee
+            employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
+            if employee:
+                employee.name = name
+                employee.hourly_rate = hourly_rate
+                success_message = f"Employee {name} updated successfully"
+            else:
+                raise HTTPException(status_code=404, detail="Employee not found")
+        else:
+            # Create new employee
+            employee = models.Employee(name=name, hourly_rate=hourly_rate)
+            db.add(employee)
+            success_message = f"Employee {name} added successfully"
+        
+        db.commit()
+        # Redirect with success message
+        return RedirectResponse(
+            url=f"/employees?success={urllib.parse.quote(success_message)}", 
+            status_code=303
+        )
+    except Exception as e:
+        db.rollback()
+        # Redirect with error message
+        error_message = f"Error saving employee: {str(e)}"
+        return RedirectResponse(
+            url=f"/employees?error={urllib.parse.quote(error_message)}", 
+            status_code=303
+        )
 
 @app.post("/employees/delete/{employee_id}")
 async def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     """Delete an employee"""
-    employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
-    if not employee:
-        raise HTTPException(status_code=404, detail="Employee not found")
-    
-    db.delete(employee)
-    db.commit()
-    return RedirectResponse(url="/employees", status_code=303)
+    try:
+        employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        # Check if employee has related records (work logs, payments)
+        work_logs = db.query(models.WorkLog).filter(models.WorkLog.employee_id == employee_id).count()
+        payments = db.query(models.Payment).filter(models.Payment.employee_id == employee_id).count()
+        
+        if work_logs > 0 or payments > 0:
+            warning = f"Employee has {work_logs} work logs and {payments} payment records. These will also be deleted."
+        
+        # Get employee name for success message
+        employee_name = employee.name
+        
+        db.delete(employee)
+        db.commit()
+        
+        # Redirect with success message
+        success_message = f"Employee {employee_name} deleted successfully"
+        return RedirectResponse(
+            url=f"/employees?success={urllib.parse.quote(success_message)}", 
+            status_code=303
+        )
+    except Exception as e:
+        db.rollback()
+        # Redirect with error message
+        error_message = f"Error deleting employee: {str(e)}"
+        return RedirectResponse(
+            url=f"/employees?error={urllib.parse.quote(error_message)}", 
+            status_code=303
+        )
 
 # Work Log Entry
 @app.get("/worklogs")
