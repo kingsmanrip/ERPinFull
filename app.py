@@ -74,9 +74,9 @@ async def root(request: Request, db: Session = Depends(get_db)):
         models.AccountsPayable.status == "pending"
     ).order_by(models.AccountsPayable.due_date).limit(5).all()
     
-    # Active projects
+    # Active projects (those with no end date or end date in the future)
     active_projects = db.query(models.Project).filter(
-        models.Project.end_date == None
+        (models.Project.end_date == None) | (models.Project.end_date >= today)
     ).order_by(models.Project.start_date.desc()).limit(5).all()
     
     # Recent activity (combine payments, invoices, expenses, paid accounts)

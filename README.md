@@ -1,15 +1,17 @@
 # Construction ERP
 
-A simple ERP system for construction companies, focusing on payroll, project invoicing, and financial management.
+A comprehensive ERP system for construction companies, featuring payroll management, project invoicing, financial tracking, and interactive data visualization.
 
 ## Features
 
+- **Interactive Dashboard**: Visual overview of key metrics with charts and graphs
 - **Employee Management**: Track employees and their hourly rates
 - **Work Log Entry**: Record daily hours with lunch break tracking
 - **Payroll Processing**: Calculate weekly payroll with payment method tracking
 - **Project Management**: Track projects, costs, and profit margins
 - **Invoicing**: Generate invoices for projects
 - **Financial Management**: Handle accounts payable, paid accounts, and expenses
+- **Data Visualization**: Interactive charts for financial analysis
 - **Reports**: Generate various reports for payroll, projects, and finances
 
 ## Tech Stack
@@ -17,6 +19,7 @@ A simple ERP system for construction companies, focusing on payroll, project inv
 - **Backend**: Python with FastAPI
 - **Database**: SQLite with SQLAlchemy
 - **Frontend**: HTML with Jinja2 templates and Bootstrap
+- **Data Visualization**: Chart.js
 - **Deployment**: Gunicorn
 
 ## Installation
@@ -85,13 +88,14 @@ construction_erp/
 
 ## Usage
 
-1. **Employee Management**: Add employees and their hourly rates
-2. **Work Log Entry**: Record daily hours for employees (typically done on Fridays for the past week)
-3. **Payroll Processing**: Calculate and process weekly payroll
-4. **Project Management**: Create projects and track costs
-5. **Invoicing**: Generate invoices for projects
-6. **Financial Management**: Track accounts payable, paid accounts, and expenses
-7. **Reports**: Generate various reports for analysis
+1. **Dashboard**: View key metrics and visualizations on the home page
+2. **Employee Management**: Add employees and their hourly rates
+3. **Work Log Entry**: Record daily hours for employees (typically done on Fridays for the past week)
+4. **Payroll Processing**: Calculate and process weekly payroll
+5. **Project Management**: Create projects and track costs
+6. **Invoicing**: Generate invoices for projects
+7. **Financial Management**: Track accounts payable, paid accounts, and expenses
+8. **Reports**: Generate various reports for analysis
 
 ## License
 

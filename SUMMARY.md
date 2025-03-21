@@ -14,7 +14,7 @@ The system is designed to be simple yet powerful, with a focus on usability and 
 
 ### Core Features
 
-- **Dashboard**: Overview of key metrics and recent activity
+- **Interactive Dashboard**: Visual overview of key metrics with interactive charts and recent activity
 - **Employee Management**: Track employees and their hourly rates
 - **Work Log Entry**: Record daily hours with lunch break tracking
 - **Payroll Processing**: Calculate weekly payroll with payment method tracking
@@ -29,6 +29,7 @@ The system is designed to be simple yet powerful, with a focus on usability and 
 - **Backend**: Python with FastAPI
 - **Database**: SQLite with SQLAlchemy
 - **Frontend**: HTML with Jinja2 templates and Bootstrap
+- **Data Visualization**: Interactive charts with Chart.js
 - **Deployment**: Ready for deployment with Gunicorn
 
 ## How to Use
@@ -72,7 +73,7 @@ Here are some potential enhancements for the future:
 3. **Email Notifications**: Send reminders for payments due
 4. **Mobile App**: Create a companion mobile app for field use
 5. **Integration**: Connect with accounting software
-6. **Advanced Reporting**: Add more detailed reports and visualizations
+6. **Enhanced Visualizations**: Add more interactive charts and dashboards
 
 ## Support
 
